@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Donation Overlay</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: transparent; /* โปร่งใสสำหรับ OBS */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #alertContainer {
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #fff;
+            border-radius: 16px;
+            padding: 20px 40px;
+            color: #fff;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+            opacity: 0;
+            transform: translateY(-50px) scale(0.9);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: none;
+            max-width: 600px;
+        }
+
+        #alertContainer.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .alert-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffdd57;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .alert-amount {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .alert-message {
+            font-size: 20px;
+            color: #ccc;
+            font-style: italic;
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="alertContainer">
+        <div class="alert-title pulse">🎉 โดเนทเข้าแล้ว! 🎉</div>
+        <div class="alert-amount"><span id="donorName"></span> โดเนท <span id="donorAmount" style="color: #48c774;"></span> บาท</div>
+        <div class="alert-message">"<span id="donorMessage"></span>"</div>
+    </div>
+
+    <!-- โหลด Socket.io client version -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="overlay.js"></script>
+</body>
+</html>
