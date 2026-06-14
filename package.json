@@ -1,0 +1,20 @@
+{
+  "name": "donet-system",
+  "version": "1.0.0",
+  "description": "Private Donation Alert System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.5.2",
+    "google-tts-api": "^2.0.2",
+    "helmet": "^8.2.0",
+    "multer": "^1.4.5-lts.1",
+    "promptpay-qr": "^0.5.0",
+    "qrcode": "^1.5.3",
+    "socket.io": "^4.7.5"
+  }
+}
