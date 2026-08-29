@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Donation Overlay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800;900&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        body, html {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: transparent; /* โปร่งใสสำหรับ OBS */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+        }
+
+        /* กล่องแจ้งเตือน (Alert Box) */
+        #alertContainer {
+            background: linear-gradient(135deg, rgba(14, 15, 22, 0.94) 0%, rgba(24, 26, 38, 0.96) 100%);
+            border: 2.5px solid rgba(255, 215, 0, 0.7);
+            border-radius: 28px;
+            padding: 35px 50px;
+            color: #ffffff;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85),
+                        0 0 40px rgba(255, 215, 0, 0.35),
+                        inset 0 1px 3px rgba(255, 255, 255, 0.25);
+            opacity: 0;
+            transform: translateY(-60px) scale(0.85);
+            transition: all 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: none;
+            width: 90%;
+            max-width: 880px;
+            position: relative;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        #alertContainer.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* หัวข้อ Alert */
+        .alert-header {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 170, 0, 0.1));
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 999px;
+            padding: 8px 26px;
+            margin-bottom: 18px;
+        }
+
+        .alert-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #ffe066, #ffb703, #ffd166);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(255, 183, 3, 0.4);
+            text-transform: uppercase;
+        }
+
+        /* ชื่อและยอดเงิน (ขนาดใหญ่ อ่านง่าย คมชัด) */
+        .alert-amount-row {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 16px;
+            text-shadow: 0 3px 12px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.6);
+            word-break: break-word;
+        }
+
+        .donor-name {
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .donor-action {
+            color: #e0e0e0;
+            font-weight: 600;
+            font-size: 44px;
+            margin: 0 8px;
+        }
+
+        .donor-amount {
+            color: #00ff88;
+            font-family: 'Outfit', 'Kanit', sans-serif;
+            font-weight: 900;
+            font-size: 58px;
+            text-shadow: 0 0 25px rgba(0, 255, 136, 0.7), 0 2px 6px rgba(0,0,0,0.8);
+        }
+
+        .currency-label {
+            color: #00ff88;
+            font-size: 42px;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        /* กล่องข้อความจากผู้โดเนท */
+        .alert-message-box {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            padding: 16px 28px;
+            margin-top: 10px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .alert-message {
+            font-size: 32px;
+            font-weight: 600;
+            color: #f5f5fa;
+            line-height: 1.45;
+            word-break: break-word;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+        }
+
+        /* ปุ่มควบคุมสำหรับทดสอบ */
+        .controls-bar {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .btn-control {
+            background: rgba(20, 20, 25, 0.9);
+            border: 1.5px solid rgba(255, 215, 0, 0.6);
+            color: #ffd700;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            outline: none;
+        }
+
+        .btn-control:hover {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #00ff88, #00b359);
+            border: 1.5px solid #00ff88;
+            color: #0d1a12;
+            font-weight: 700;
+        }
+
+        .btn-test:hover {
+            background: linear-gradient(135deg, #33ff9f, #00e676);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Pulse Animation */
+        .pulse {
+            animation: pulse-glow 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4)); }
+            100% { transform: scale(1.04); filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.8)); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ปุ่มควบคุมและทดสอบ (จะมองเห็นตอนเปิดบราวเซอร์ปกติ) -->
+    <div class="controls-bar">
+        <button id="audioUnlockPrompt" class="btn-control" onclick="unlockAudio()">
+            <span>🔊</span> เปิดเสียง (Audio)
+        </button>
+        <button class="btn-control btn-test" onclick="triggerTestAlert()">
+            <span>🧪</span> ยิงทดสอบแจ้งเตือน (Test Alert)
+        </button>
+    </div>
+
+    <!-- Alert Box -->
+    <div id="alertContainer">
+        <div class="alert-header pulse">
+            <span style="font-size: 24px;">🎉</span>
+            <span class="alert-title">DONATION ALERT</span>
+            <span style="font-size: 24px;">🎉</span>
+        </div>
+
+        <div class="alert-amount-row">
+            <span id="donorName" class="donor-name">สมชาย</span>
+            <span class="donor-action">โดเนท</span>
+            <span id="donorAmount" class="donor-amount">100</span>
+            <span class="currency-label">บาท</span>
+        </div>
+
+        <div id="messageWrapper" class="alert-message-box">
+            <div class="alert-message">"<span id="donorMessage">สู้ๆ ครับเป็นกำลังใจให้!</span>"</div>
+        </div>
+    </div>
+
+    <!-- Socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="overlay.js"></script>
+</body>
+</html>

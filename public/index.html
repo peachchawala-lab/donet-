@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dynamic-bg">
+        <!-- Pills -->
+        <div class="pill anim-element" style="width: 800px; height: 140px; top: 10%; left: -20%; animation-duration: 40s; animation-delay: -10s;"></div>
+        <div class="pill anim-element" style="width: 600px; height: 100px; top: 30%; left: 10%; animation-duration: 35s; animation-delay: -5s;"></div>
+        <div class="pill anim-element" style="width: 1200px; height: 180px; top: 50%; left: -10%; animation-duration: 50s; animation-delay: -25s;"></div>
+        <div class="pill anim-element" style="width: 450px; height: 80px; top: 70%; left: 30%; animation-duration: 28s; animation-delay: -2s;"></div>
+        <div class="pill anim-element" style="width: 900px; height: 120px; top: 85%; left: -30%; animation-duration: 45s; animation-delay: -15s;"></div>
+        <div class="pill anim-element" style="width: 700px; height: 110px; top: -10%; left: 40%; animation-duration: 38s; animation-delay: -8s;"></div>
+        <!-- Gold Lines -->
+        <div class="gold-line anim-element" style="width: 1000px; top: 25%; left: 0; animation-duration: 30s; animation-delay: -12s;"></div>
+        <div class="gold-line anim-element" style="width: 1500px; top: 60%; left: -20%; animation-duration: 42s; animation-delay: -20s;"></div>
+        <div class="gold-line anim-element" style="width: 800px; top: 80%; left: 20%; animation-duration: 25s; animation-delay: -5s;"></div>
+    </div>
+    <div class="glass-container">
+        <h1>สนับสนุนสตรีมเมอร์</h1>
+        <p class="subtitle">ระบบโดเนทไม่หักค่าธรรมเนียม</p>
+        
+        <form id="donateForm">
+            <div class="input-group">
+                <label for="name">ชื่อของคุณ</label>
+                <input type="text" id="name" placeholder="นามแฝงสุดเท่" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="amount">จำนวนเงิน (บาท)</label>
+                <div class="quick-amounts">
+                    <button type="button" class="btn-amount" data-val="20">20</button>
+                    <button type="button" class="btn-amount" data-val="50">50</button>
+                    <button type="button" class="btn-amount" data-val="100">100</button>
+                    <button type="button" class="btn-amount" data-val="300">300</button>
+                    <button type="button" class="btn-amount" data-val="500">500</button>
+                </div>
+                <input type="number" id="amount" min="1" placeholder="ระบุจำนวนเงินอื่นๆ..." required>
+            </div>
+            
+            <div class="input-group">
+                <label for="message">ข้อความถึงสตรีมเมอร์</label>
+                <textarea id="message" rows="3" placeholder="พิมพ์ข้อความให้บอทอ่าน..."></textarea>
+            </div>
+            
+            <div class="input-group">
+                <label for="voice">เลือกเสียงอ่าน (TTS)</label>
+                <div style="display: flex; gap: 10px;">
+                    <select id="voice" style="flex: 1;">
+                        <option value="th-TH">เสียงไทย (ปกติ)</option>
+                        <option value="th-TH-slow">เสียงไทย (ช้า)</option>
+                        <option value="en-US">เสียงภาษาอังกฤษ</option>
+                    </select>
+                    <button type="button" id="btnTestVoice" class="btn" style="width: auto; padding: 0 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); font-size: 14px;">ทดสอบเสียง</button>
+                </div>
+            </div>
+            
+            <button type="button" id="btnGenerateQr" class="btn primary">สร้าง QR Code</button>
+        </form>
+
+        <div id="qrSection" class="hidden">
+            <div class="qr-box">
+                <img id="qrImage" src="" alt="PromptPay QR">
+                <p>สแกนผ่านแอปธนาคาร</p>
+            </div>
+            
+            <div class="input-group mt-2">
+                <label for="slipInput" class="upload-label">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <span>แนบรูปสลิปโอนเงิน</span>
+                </label>
+                <input type="file" id="slipInput" accept="image/*">
+                <p id="slipFileName" class="file-name"></p>
+            </div>
+
+            <button type="button" id="btnConfirm" class="btn success hidden">ยืนยันการโดเนท</button>
+        </div>
+
+        <div id="loadingOverlay" class="hidden">
+            <div class="spinner"></div>
+            <p>กำลังประมวลผล...</p>
+        </div>
+        
+        <div id="successOverlay" class="hidden">
+            <div class="success-icon">✓</div>
+            <h2>ขอบคุณที่สนับสนุน!</h2>
+            <p>ข้อความของคุณถูกส่งขึ้นจอแล้ว</p>
+            <button type="button" class="btn" onclick="location.reload()">โดเนทอีกครั้ง</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
